@@ -38,9 +38,32 @@ export const lambdaHandler = async (event, context) => {
         )
         return {
             'statusCode': 200,
-            'body': JSON.stringify({
-                List: users.Items,
+            'body': JSON.stringify(users.Items)
+        }
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+export const create = async (event, context) => {
+    try {
+        const body=JSON.parse(event.body)
+        const user=await dynamo.send(
+            new PutCommand({
+                TableName: tableName,
+                Item: {
+                    id: parseInt(body.id),
+                    name: body.name,
+                    email: body.email,
+                    password: body.password
+                }
             })
+        )
+        
+        return {
+            'statusCode': 200,
+            'body': JSON.stringify(body)
         }
     } catch (err) {
         console.log(err);
